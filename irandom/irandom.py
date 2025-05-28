@@ -1,21 +1,8 @@
-"""irandom
+"""i random, totally ripped off from Python (legally i think?) 
+except i changed 'sample' to 'isample' and 'choices' to 'ichoices'.
+now these replacement functions are supposed to return iterators
+instead of building a an entire list.
 
-copied and pasted from Python's random (legally i think?)
-except i added 'isample' and 'ichoices' methods which both
-return iterators instead of building an entire list.
-
-(example: if you have a stratified contest where you progressively
-need to pick winners from a pool in stages (down to one at a time)
-you probably want an iterator. also if you want to leave some data
-hidden (ie. the would-be winners in the contest analogy), then you
-probably want an iterator.)
-
-note: 'sample' calls list(isample()) and 'choices' calls 
-list(ichoices()) but the algorithm is identical to Python's 
-original, unless i screwed something up which i really probably did,
-but not on purpose.
-
-original docstring follows
 
     Random variable generators.
 
@@ -371,13 +358,27 @@ class Random(_random.Random):
         return seq[self._randbelow(len(seq))]
 
     def shuffle(self, x):
-        """Shuffle list x in place, and return None."""
+        self.ishuffle(x=x)
+        return
+
+    def ishuffle(self, x):
+        """Same as shuffle but both modifies the list in place
+        and yields the items as they are revealed (from the back
+        of the list like popping a stack).
+
+        orinal docstring follows:
+
+        Shuffle list x in place, and return None."""
 
         randbelow = self._randbelow
         for i in reversed(range(1, len(x))):
             # pick an element in x[:i+1] with which to exchange x[i]
             j = randbelow(i + 1)
             x[i], x[j] = x[j], x[i]
+            yield x[i]
+        
+        yield x[0]
+        return
     
     def sample(self, population, k, *, counts=None):
         return list(self.isample(population=population, k=k, counts=counts))
