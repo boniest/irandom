@@ -1,8 +1,8 @@
-"""i random, totally ripped off from Python (legally i think?) 
-except i changed 'sample' to 'isample' and 'choices' to 'ichoices'.
-now these replacement functions are supposed to return iterators
-instead of building a an entire list.
+"""irandom
 
+- added "ichoices" which returns an iterator.
+- added "isample" which returns an iterator.
+- added "ishuffle which returns an iterator while a list is modified in place.
 
     Random variable generators.
 
@@ -362,7 +362,7 @@ class Random(_random.Random):
         return
 
     def ishuffle(self, x):
-        """Same as shuffle but both modifies the list in place
+        """same as shuffle but both modifies the list in place
         and yields the items as they are revealed (from the back
         of the list like popping a stack).
 
@@ -1185,6 +1185,43 @@ if __name__ == '__main__':
     i = t
     end = time.time()
     print(f'choices: list latency: {end-start}; n={n}; k={k}')
+    #
+
+    #
+    n = 2**20
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    _ = r.shuffle(l)
+    i = l[-1] # note: the list is determined from back to front.
+    end = time.time()
+    print(f'shuffle: first item latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    t = r.ishuffle(l)
+    i = next(t) # this is where l is modified once.
+    end = time.time()
+    print(f'ishuffle: first item latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    _ = r.shuffle(l)
+    i = l
+    end = time.time()
+    print(f'shuffle: list latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    i = r.ishuffle(l)
+    t = list(i)
+    end = time.time()
+    print(f'ishuffle: list latency: {end-start}; n={n}; k={k}')
+    #
 
     print()
 
