@@ -1,8 +1,14 @@
 # irandom
 
-- added "ichoices" which returns an iterator.
-- added "isample" which returns an iterator.
-- added "ishuffle which returns an iterator and modifies a list in place.
+- added `ichoices` which returns an iterator.
+- made `choices` to call `ichoices`.
+- retained Python's `choices` as `old_choices`.
+- added `isample` which returns an iterator.
+- made `samples` to call `isamples`.
+- retained Python's `samples` as `old_samples`.
+- added `ishuffle` which returns an iterator and modifies a list in place.
+- made `shuffle` to call `ishuffle` (and discard the iterator).
+- retained Python's `shuffle` as `old_shuffle`.
 
 ```
 PS C:\Users\kevin\source\code\irandom> python .\irandom.py
