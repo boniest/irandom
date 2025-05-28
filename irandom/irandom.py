@@ -438,6 +438,7 @@ class Random(_random.Random):
             # IRANDOM: RETURNS AN ITERATOR
             # return [population[bisect(cum_counts, s)] for s in selections]
             yield from (population[bisect(cum_counts, s)] for s in selections)
+            return
             #
         randbelow = self._randbelow
         if not 0 <= k <= n:
@@ -473,6 +474,7 @@ class Random(_random.Random):
                 #
         # IRANDOM: RETURNS AN ITERATOR
         # return result
+        return
         #
 
     def ichoices(self, population, weights=None, *, cum_weights=None, k=1):
@@ -495,6 +497,7 @@ class Random(_random.Random):
                 # IRANDOM: RETURNS AN ITERATOR
                 # return [population[floor(random() * n)] for i in _repeat(None, k)]
                 yield from (population[floor(random() * n)] for i in _repeat(None, k))
+                return
                 #
             try:
                 cum_weights = list(_accumulate(weights))
@@ -521,6 +524,7 @@ class Random(_random.Random):
         #         for i in _repeat(None, k)]
         yield from (population[bisect(cum_weights, random() * total, 0, hi)]
                 for i in _repeat(None, k))
+        return
         #
 
 
@@ -1103,18 +1107,34 @@ if __name__ == '__main__':
     n = 2**40
     k = 2**20
 
-    start = time.time()
     r = Random()
+    start = time.time()
     t = r.isample(population=range(n), k=k)
-    next(t)
+    i = next(t)
     end = time.time()
     print(f'isample: first item latency: {end-start}; n={n}; k={k}')
-    
-    start = time.time()
+
     r = Random()
+    start = time.time()
+    t = r.isample(population=range(n), k=k)
+    i = list(t)
+    end = time.time()
+    print(f'isample: list latency: {end-start}; n={n}; k={k}')
+    
+    r = Random()
+    start = time.time()
     t = r.ichoices(population=range(n), k=k)
-    next(t)
+    i = next(t)
     end = time.time()
     print(f'ichoices: first item latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    t = r.ichoices(population=range(n), k=k)
+    i = list(t)
+    end = time.time()
+    print(f'ichoices: list latency: {end-start}; n={n}; k={k}')
+
+    print()
 
     print(main())
