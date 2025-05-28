@@ -1,2 +1,2 @@
 # irandom
-copied directly from Python, then modified so that 'random' is 'irandom' and 'choices' is 'ichoices', and they both return iterators.
+copied directly from Python, then modified so that `random` is now `irandom` and `choices` is now `ichoices`, and they both return iterators.
