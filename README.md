@@ -1,5 +1,8 @@
 # irandom
-copied directly from Python, then modified so that `random` is now `irandom` and `choices` is now `ichoices`, and they both return iterators.
+
+- added "ichoices" which returns an iterator.
+- added "isample" which returns an iterator.
+- added "ishuffle which returns an iterator and modifies a list in place.
 
 ```
 PS C:\Users\kevin\source\code\irandom> python .\irandom.py
