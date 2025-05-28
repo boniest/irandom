@@ -432,7 +432,10 @@ class Random(_random.Random):
                 raise ValueError('Counts must be non-negative')
             selections = self.sample(range(total), k=k)
             bisect = _bisect
-            return [population[bisect(cum_counts, s)] for s in selections]
+            # IRANDOM: RETURNS AN ITERATOR
+            # return [population[bisect(cum_counts, s)] for s in selections]
+            yield from (population[bisect(cum_counts, s)] for s in selections)
+            #
         randbelow = self._randbelow
         if not 0 <= k <= n:
             raise ValueError("Sample larger than population or is negative")
