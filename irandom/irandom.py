@@ -356,10 +356,24 @@ class Random(_random.Random):
         if not len(seq):
             raise IndexError('Cannot choose from an empty sequence')
         return seq[self._randbelow(len(seq))]
+    
+
+    def old_shuffle(self, x):
+        """copied directly from Python's shuffle
+        
+        Shuffle list x in place, and return None."""
+
+        randbelow = self._randbelow
+        for i in reversed(range(1, len(x))):
+            # pick an element in x[:i+1] with which to exchange x[i]
+            j = randbelow(i + 1)
+            x[i], x[j] = x[j], x[i]
+
 
     def shuffle(self, x):
-        self.ishuffle(x=x)
+        list(self.ishuffle(x=x))
         return
+
 
     def ishuffle(self, x):
         """same as shuffle but both modifies the list in place
@@ -1144,6 +1158,8 @@ if __name__ == '__main__':
     end = time.time()
     print(f'sample: first item latency: {end-start}; n={n}; k={k}')
 
+    print()
+
     r = Random()
     start = time.time()
     t = r.isample(population=range(n), k=k)
@@ -1157,6 +1173,8 @@ if __name__ == '__main__':
     i = t
     end = time.time()
     print(f'sample: list latency: {end-start}; n={n}; k={k}')
+
+    print()
     
     r = Random()
     start = time.time()
@@ -1172,6 +1190,8 @@ if __name__ == '__main__':
     end = time.time()
     print(f'choices: first item latency: {end-start}; n={n}; k={k}')
 
+    print()
+
     r = Random()
     start = time.time()
     t = r.ichoices(population=range(n), k=k)
@@ -1185,18 +1205,11 @@ if __name__ == '__main__':
     i = t
     end = time.time()
     print(f'choices: list latency: {end-start}; n={n}; k={k}')
-    #
+
+    print()
 
     #
-    n = 2**20
-
-    r = Random()
-    start = time.time()
-    l = list(range(n))
-    _ = r.shuffle(l)
-    i = l[-1] # note: the list is determined from back to front.
-    end = time.time()
-    print(f'shuffle: first item latency: {end-start}; n={n}; k={k}')
+    n = 2**24
 
     r = Random()
     start = time.time()
@@ -1204,15 +1217,25 @@ if __name__ == '__main__':
     t = r.ishuffle(l)
     i = next(t) # this is where l is modified once.
     end = time.time()
-    print(f'ishuffle: first item latency: {end-start}; n={n}; k={k}')
+    print(f'ishuffle: first item latency: {end-start}; n={n}')
 
     r = Random()
     start = time.time()
     l = list(range(n))
     _ = r.shuffle(l)
-    i = l
+    i = l[-1] # note: the list is determined from back to front.
     end = time.time()
-    print(f'shuffle: list latency: {end-start}; n={n}; k={k}')
+    print(f'shuffle: first item latency: {end-start}; n={n}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    _ = r.old_shuffle(l)
+    i = l[-1] # note: the list is determined from back to front.
+    end = time.time()
+    print(f'old shuffle: first item latency: {end-start}; n={n}')
+
+    print()
 
     r = Random()
     start = time.time()
@@ -1220,8 +1243,23 @@ if __name__ == '__main__':
     i = r.ishuffle(l)
     t = list(i)
     end = time.time()
-    print(f'ishuffle: list latency: {end-start}; n={n}; k={k}')
-    #
+    print(f'ishuffle: list latency: {end-start}; n={n}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    _ = r.shuffle(l)
+    i = l
+    end = time.time()
+    print(f'shuffle: list latency: {end-start}; n={n}')
+
+    r = Random()
+    start = time.time()
+    l = list(range(n))
+    _ = r.old_shuffle(l)
+    i = l
+    end = time.time()
+    print(f'old shuffle: list latency: {end-start}; n={n}')
 
     print()
 
