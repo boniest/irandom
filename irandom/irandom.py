@@ -2,7 +2,7 @@
 
 - added "ichoices" which returns an iterator.
 - added "isample" which returns an iterator.
-- added "ishuffle which returns an iterator while a list is modified in place.
+- added "ishuffle which returns an iterator and modifies a list in place.
 
     Random variable generators.
 
