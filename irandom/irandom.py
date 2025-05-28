@@ -359,9 +359,7 @@ class Random(_random.Random):
     
 
     def old_shuffle(self, x):
-        """copied directly from Python's shuffle
-        
-        Shuffle list x in place, and return None."""
+        """copied directly from Python's shuffle"""
 
         randbelow = self._randbelow
         for i in reversed(range(1, len(x))):
@@ -393,9 +391,57 @@ class Random(_random.Random):
         
         yield x[0]
         return
-    
+
+
+    def old_sample(self, population, k, *, counts=None):
+        """copied directly from Python's sample"""
+
+        if not isinstance(population, _Sequence):
+            raise TypeError("Population must be a sequence.  "
+                            "For dicts or sets, use sorted(d).")
+        n = len(population)
+        if counts is not None:
+            cum_counts = list(_accumulate(counts))
+            if len(cum_counts) != n:
+                raise ValueError('The number of counts does not match the population')
+            total = cum_counts.pop() if cum_counts else 0
+            if not isinstance(total, int):
+                raise TypeError('Counts must be integers')
+            if total < 0:
+                raise ValueError('Counts must be non-negative')
+            selections = self.sample(range(total), k=k)
+            bisect = _bisect
+            return [population[bisect(cum_counts, s)] for s in selections]
+        randbelow = self._randbelow
+        if not 0 <= k <= n:
+            raise ValueError("Sample larger than population or is negative")
+        result = [None] * k
+        setsize = 21        # size of a small set minus size of an empty list
+        if k > 5:
+            setsize += 4 ** _ceil(_log(k * 3, 4))  # table size for big sets
+        if n <= setsize:
+            # An n-length list is smaller than a k-length set.
+            # Invariant:  non-selected at pool[0 : n-i]
+            pool = list(population)
+            for i in range(k):
+                j = randbelow(n - i)
+                result[i] = pool[j]
+                pool[j] = pool[n - i - 1]  # move non-selected item into vacancy
+        else:
+            selected = set()
+            selected_add = selected.add
+            for i in range(k):
+                j = randbelow(n)
+                while j in selected:
+                    j = randbelow(n)
+                selected_add(j)
+                result[i] = population[j]
+        return result
+
+
     def sample(self, population, k, *, counts=None):
         return list(self.isample(population=population, k=k, counts=counts))
+
 
     def isample(self, population, k, *, counts=None):
         """Same as random.sample() but returns an iterator.
@@ -511,8 +557,44 @@ class Random(_random.Random):
         return
         #
 
+
+    def old_choices(self, population, weights=None, *, cum_weights=None, k=1):
+        """copied directly from Python's choices"""
+
+        random = self.random
+        n = len(population)
+        if cum_weights is None:
+            if weights is None:
+                floor = _floor
+                n += 0.0    # convert to float for a small speed improvement
+                return [population[floor(random() * n)] for i in _repeat(None, k)]
+            try:
+                cum_weights = list(_accumulate(weights))
+            except TypeError:
+                if not isinstance(weights, int):
+                    raise
+                k = weights
+                raise TypeError(
+                    f'The number of choices must be a keyword argument: {k=}'
+                ) from None
+        elif weights is not None:
+            raise TypeError('Cannot specify both weights and cumulative weights')
+        if len(cum_weights) != n:
+            raise ValueError('The number of weights does not match the population')
+        total = cum_weights[-1] + 0.0   # convert to float
+        if total <= 0.0:
+            raise ValueError('Total of weights must be greater than zero')
+        if not _isfinite(total):
+            raise ValueError('Total of weights must be finite')
+        bisect = _bisect
+        hi = n - 1
+        return [population[bisect(cum_weights, random() * total, 0, hi)]
+                for i in _repeat(None, k)]
+
+
     def choices(self, population, weights=None, *, cum_weights=None, k=1):
         return list(self.ichoices(population=population, weights=weights, cum_weights=cum_weights, k=k))
+
 
     def ichoices(self, population, weights=None, *, cum_weights=None, k=1):
         """Same as random.choices() but returns an iterator.
@@ -1158,6 +1240,13 @@ if __name__ == '__main__':
     end = time.time()
     print(f'sample: first item latency: {end-start}; n={n}; k={k}')
 
+    r = Random()
+    start = time.time()
+    t = r.old_sample(population=range(n), k=k)
+    i = t[0]
+    end = time.time()
+    print(f'old_sample: first item latency: {end-start}; n={n}; k={k}')
+
     print()
 
     r = Random()
@@ -1174,6 +1263,13 @@ if __name__ == '__main__':
     end = time.time()
     print(f'sample: list latency: {end-start}; n={n}; k={k}')
 
+    r = Random()
+    start = time.time()
+    t = r.old_sample(population=range(n), k=k)
+    i = t
+    end = time.time()
+    print(f'old sample: list latency: {end-start}; n={n}; k={k}')
+
     print()
     
     r = Random()
@@ -1189,6 +1285,13 @@ if __name__ == '__main__':
     i = t[0]
     end = time.time()
     print(f'choices: first item latency: {end-start}; n={n}; k={k}')
+    
+    r = Random()
+    start = time.time()
+    t = r.old_choices(population=range(n), k=k)
+    i = t[0]
+    end = time.time()
+    print(f'old choices: first item latency: {end-start}; n={n}; k={k}')
 
     print()
 
@@ -1205,6 +1308,13 @@ if __name__ == '__main__':
     i = t
     end = time.time()
     print(f'choices: list latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    t = r.old_choices(population=range(n), k=k)
+    i = t
+    end = time.time()
+    print(f'old choices: list latency: {end-start}; n={n}; k={k}')
 
     print()
 
