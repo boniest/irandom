@@ -5,7 +5,7 @@ except i added 'isample' and 'ichoices' methods which both
 return iterators instead of building an entire list.
 
 (example: if you have a stratified contest where you progressively
-need to pick winners from a pool but only need one winner at a time,
+need to pick winners from a pool in stages (down to one at a time)
 you probably want an iterator.)
 
 note: 'sample' calls list(isample()) and 'choices' calls 
