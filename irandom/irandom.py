@@ -10,7 +10,8 @@ you probably want an iterator.)
 
 note: 'sample' calls list(isample()) and 'choices' calls 
 list(ichoices()) but the algorithm is identical to Python's 
-original, unless i screwed something up which i really probably did.
+original, unless i screwed something up which i really probably did,
+but not on purpose.
 
 original docstring follows
 
