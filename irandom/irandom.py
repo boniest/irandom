@@ -1108,6 +1108,13 @@ if __name__ == '__main__':
     t = r.isample(population=range(n), k=k)
     next(t)
     end = time.time()
-    print(f'first item latency: {end-start}; n={n}; k={k}')
+    print(f'isample: first item latency: {end-start}; n={n}; k={k}')
+    
+    start = time.time()
+    r = Random()
+    t = r.ichoices(population=range(n), k=k)
+    next(t)
+    end = time.time()
+    print(f'ichoices: first item latency: {end-start}; n={n}; k={k}')
 
     print(main())
