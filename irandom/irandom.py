@@ -68,7 +68,7 @@ __all__ = [
     "betavariate",
     "binomialvariate",
     "choice",
-    "choices",
+    "ichoices",
     "expovariate",
     "gammavariate",
     "gauss",
@@ -81,7 +81,7 @@ __all__ = [
     "randint",
     "random",
     "randrange",
-    "sample",
+    "isample",
     "seed",
     "setstate",
     "shuffle",
@@ -359,6 +359,9 @@ class Random(_random.Random):
             # pick an element in x[:i+1] with which to exchange x[i]
             j = randbelow(i + 1)
             x[i], x[j] = x[j], x[i]
+    
+    def sample(self, population, k, *, counts=None):
+        return list(self.isample(self, population, k, counts))
 
     def isample(self, population, k, *, counts=None):
         """Same as random.sample() but returns an iterator.
@@ -957,9 +960,9 @@ triangular = _inst.triangular
 randint = _inst.randint
 choice = _inst.choice
 randrange = _inst.randrange
-sample = _inst.sample
+isample = _inst.isample
 shuffle = _inst.shuffle
-choices = _inst.choices
+ichoices = _inst.ichoices
 normalvariate = _inst.normalvariate
 lognormvariate = _inst.lognormvariate
 expovariate = _inst.expovariate
@@ -1095,4 +1098,16 @@ def main(arg_list: list[str] | None = None) -> int | str:
 
 
 if __name__ == '__main__':
+    import time
+
+    n = 2**40
+    k = 2**20
+
+    start = time.time()
+    r = Random()
+    t = r.isample(population=range(n), k=k)
+    next(t)
+    end = time.time()
+    print(f'first item latency: {end-start}; n={n}; k={k}')
+
     print(main())
