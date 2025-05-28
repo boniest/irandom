@@ -1,8 +1,14 @@
-"""i random, totally ripped off from Python (legally i think?) 
-except i changed 'sample' to 'isample' and 'choices' to 'ichoices'.
-now these replacement functions are supposed to return iterators
-instead of building a an entire list.
+"""irandom
 
+copied and pasted from Python's random (legally i think?)
+except i added 'isample' and 'ichoices' methods which both
+return iterators instead of building a an entire list.
+
+note: 'sample' calls 'isample' and 'choices' calls 'ichoices'
+but the algorithm is identical to Python's original, unless
+i screwed something up which i really probably did.
+
+original docstring follows
 
     Random variable generators.
 
