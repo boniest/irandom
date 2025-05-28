@@ -1,4 +1,10 @@
-"""Random variable generators.
+"""i random, totally ripped off from Python (legally i think?) 
+except i changed 'sample' to 'isample' and 'choices' to 'ichoices'.
+now these replacement functions are supposed to return iterators
+instead of building a an entire list.
+
+
+    Random variable generators.
 
     bytes
     -----
@@ -361,7 +367,7 @@ class Random(_random.Random):
             x[i], x[j] = x[j], x[i]
     
     def sample(self, population, k, *, counts=None):
-        return list(self.isample(self, population, k, counts))
+        return list(self.isample(population=population, k=k, counts=counts))
 
     def isample(self, population, k, *, counts=None):
         """Same as random.sample() but returns an iterator.
@@ -476,6 +482,9 @@ class Random(_random.Random):
         # return result
         return
         #
+
+    def choices(self, population, weights=None, *, cum_weights=None, k=1):
+        return list(self.ichoices(population=population, weights=weights, cum_weights=cum_weights, k=k))
 
     def ichoices(self, population, weights=None, *, cum_weights=None, k=1):
         """Same as random.choices() but returns an iterator.
@@ -1116,10 +1125,24 @@ if __name__ == '__main__':
 
     r = Random()
     start = time.time()
+    t = r.sample(population=range(n), k=k)
+    i = t[0]
+    end = time.time()
+    print(f'sample: first item latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
     t = r.isample(population=range(n), k=k)
     i = list(t)
     end = time.time()
     print(f'isample: list latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    t = r.sample(population=range(n), k=k)
+    i = t
+    end = time.time()
+    print(f'sample: list latency: {end-start}; n={n}; k={k}')
     
     r = Random()
     start = time.time()
@@ -1127,6 +1150,13 @@ if __name__ == '__main__':
     i = next(t)
     end = time.time()
     print(f'ichoices: first item latency: {end-start}; n={n}; k={k}')
+    
+    r = Random()
+    start = time.time()
+    t = r.choices(population=range(n), k=k)
+    i = t[0]
+    end = time.time()
+    print(f'choices: first item latency: {end-start}; n={n}; k={k}')
 
     r = Random()
     start = time.time()
@@ -1134,6 +1164,13 @@ if __name__ == '__main__':
     i = list(t)
     end = time.time()
     print(f'ichoices: list latency: {end-start}; n={n}; k={k}')
+
+    r = Random()
+    start = time.time()
+    t = r.choices(population=range(n), k=k)
+    i = t
+    end = time.time()
+    print(f'choices: list latency: {end-start}; n={n}; k={k}')
 
     print()
 
