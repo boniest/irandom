@@ -6,7 +6,9 @@ return iterators instead of building an entire list.
 
 (example: if you have a stratified contest where you progressively
 need to pick winners from a pool in stages (down to one at a time)
-you probably want an iterator.)
+you probably want an iterator. also if you want to leave some data
+hidden (ie. the would-be winners in the contest analogy), then you
+probably want an iterator.)
 
 note: 'sample' calls list(isample()) and 'choices' calls 
 list(ichoices()) but the algorithm is identical to Python's 
